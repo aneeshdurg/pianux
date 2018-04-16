@@ -21,6 +21,13 @@ algebraic:
 piano: $(OBJS_DIR)/piano.o $(OBJS_DIR)/parser.o
 	gcc $^ -g -lao -lm -ldl -o $@ 
 
+list_test: $(TEST_DIR)
+	gcc list/list_test.c -g -o $(TEST_DIR)/$@
+
+fs:
+	gcc -Wall pianux.c `pkg-config fuse --cflags --libs` -lpthread -o pianux
+
+
 parser_test: $(OBJS_DIR)/parser.o | $(TEST_DIR)
 	gcc $^ parser/parser_test.c -g -lao -lm -ldl -o $(TEST_DIR)/$@
 
@@ -34,8 +41,9 @@ unload:
 	sudo umount mount
 
 syntaxdoc: syntax.pdf
+
 syntax.pdf:
 	pandoc syntax.md -o syntax.pdf
 
 clean:
-	rm -rf piano pianux .objs/ tests/ pipe syntax.pdf
+	rm -rf piano pianux .objs/ tests/ 
