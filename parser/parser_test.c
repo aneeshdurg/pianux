@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define TEST(fn)\
-  fn();\
-  puts(#fn" passed!");\
+#define TEST(fn)                                                               \
+  fn();                                                                        \
+  puts(#fn " passed!");
 
 void init_parser_test();
 void history_insert_test();
@@ -169,15 +169,15 @@ void getinput_complex_test() {
 void getinput_loop_test() {
   char *input = "{abc,3}{{a,2}b,2}[def]";
   populate_stdin(input, strlen(input));
- 
+
   CmdT loop1[5];
   setType(Save, loop1[0]);
-  for(int i = 0; i < 3; i++){
-    setType(Note, loop1[i+1]);
-    loop1[i+1].Note.c = 'a'+i;
+  for (int i = 0; i < 3; i++) {
+    setType(Note, loop1[i + 1]);
+    loop1[i + 1].Note.c = 'a' + i;
   }
   setType(Restore, loop1[4]);
- 
+
   // Second loop should be equivalent to {aab,2} + some save/restores
   CmdT loop2[9];
   setType(Save, loop2[0]);
@@ -192,33 +192,32 @@ void getinput_loop_test() {
   setType(Note, loop2[7]);
   loop2[7].Note.c = 'b';
   setType(Restore, loop2[8]);
-  
 
   CmdT loop_final[5];
   setType(Save, loop_final[0]);
-  for(int i = 0; i < 3; i++){
-    setType(Note, loop_final[i+1]);
-    loop_final[i+1].Note.c = 'd'+i;
+  for (int i = 0; i < 3; i++) {
+    setType(Note, loop_final[i + 1]);
+    loop_final[i + 1].Note.c = 'd' + i;
   }
   setType(Restore, loop_final[4]);
- 
+
   CmdT output;
-  for(int i = 0; i < 3; i++){
-    for(int j = 0; j < 5; j++){
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 5; j++) {
       output = getinput(NONE);
       assert(cmpcmd(loop1[j], output));
     }
   }
 
-  for(int i = 0; i < 2; i++){
-    for(int j = 0; j < 9; j++){
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 9; j++) {
       output = getinput(NONE);
       assert(cmpcmd(loop2[j], output));
     }
   }
 
-  for(int i = 0; i < 100; i++){
-    for(int j = 0; j < 5; j++){
+  for (int i = 0; i < 100; i++) {
+    for (int j = 0; j < 5; j++) {
       output = getinput(NONE);
       assert(cmpcmd(loop_final[j], output));
     }
