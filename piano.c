@@ -88,13 +88,17 @@ static void dump_buffer(FILE *f, char delim){
 // Interpolation type
 typedef float (*interp_fn)(float,float,int,int);
 
-// Interpolator
+/**
+ * Interpolator
+ */
 float smooth(float start, float end, int speed, int position){
   float slope = (end-start)/(format.rate/speed);
   return start + slope*position;
 }
 
-// Default sound settings
+/**
+ * Default sound settings
+ */
 settings_t default_settings(){
   settings_t settings;
   settings.speed = 1;
@@ -103,12 +107,18 @@ settings_t default_settings(){
   return settings;
 }
 
+/**
+ * Perform all steps to shutdown piano
+ */
 static void shutdown_piano(){
   shutdown_sound();
   reset_parser();
   LIST_DESTROY(&settings_stack);
 }
 
+/**
+ * Perform all setups to setup piano
+ */
 static void setup_piano(){
   setup_sound();
   reset_parser();
@@ -151,37 +161,37 @@ int piano_proc(){
       dump_buffer(stdin, '\0');
     }
 
-    printf("Waiting... ");
     CmdT c = getinput(NONE);
-    printCmdT(c);
-    puts("");
 
     // Callbacks for input
     $(End, c, break);
     $(Save, c, 
         LIST_PREPEND(&settings_stack, settings);
         continue;
-      );
+    );
+
     $(Restore, c, {
         if(settings_stack.length){
           settings = LIST_POPF(&settings_stack);
         }
         continue;
-      });
+    });
+
     $(Speed, c, {
         if(c.Speed.relative)
           settings.speed += c.Speed.relative * c.Speed.s;
         else
           settings.speed = c.Speed.s;
         continue;
-      });
+    });
+
     $(Volume, c, {
         if(c.Volume.relative)
           settings.volume += c.Volume.relative * c.Volume.v;
         else
           settings.volume = c.Volume.v;
         continue;
-      });
+    });
 
     $(Octave, c, {
         if(c.Octave.relative)
@@ -189,16 +199,17 @@ int piano_proc(){
         else
           settings.octave = c.Octave.o;
         continue;
-      });
+    });
 
     $(Interp, c, {
         start_freq = GET_FREQ(c.Interp.start);
         end_freq = GET_FREQ(c.Interp.end);
         interpolator = smooth;
-      });
+    });
+
     $(Note, c, {
         freq = GET_FREQ(c.Note.c);
-      });
+    });
  
     // Adjust octave of note
     freq *= settings.octave;
