@@ -12,7 +12,7 @@ $(TEST_DIR):
 $(OBJS_DIR)/parser.o: algebraic parser/parser.c | $(OBJS_DIR)
 	gcc -o $@ parser/parser.c -g -ldl -c 
 
-$(OBJS_DIR)/piano.o: algebraic piano.c | $(OBJS_DIR)
+$(OBJS_DIR)/piano.o: piano.c algebraic | $(OBJS_DIR)
 	gcc -o $@ piano.c -g -ldl -c 
 
 algebraic: 
@@ -42,7 +42,7 @@ unload:
 
 syntaxdoc: syntax.pdf
 
-syntax.pdf:
+syntax.pdf: syntax.md
 	pandoc syntax.md -o syntax.pdf
 
 clean:
