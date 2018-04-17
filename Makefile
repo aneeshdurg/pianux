@@ -4,6 +4,10 @@ TEST_DIR=tests
 
 all: piano
 
+all_tests: parser_test list_test
+	./tests/list_test
+	./tests/parser_test
+
 $(OBJS_DIR):
 	mkdir -p $(OBJS_DIR)
 $(TEST_DIR):
@@ -45,5 +49,10 @@ syntaxdoc: syntax.pdf
 syntax.pdf: syntax.md
 	pandoc syntax.md -o syntax.pdf
 
+testdoc: manual_testing.pdf
+
+manual_testing.pdf: manual_testing.md
+	pandoc manual_testing.md -o manual_testing.pdf
+
 clean:
-	rm -rf piano pianux .objs/ tests/ 
+	rm -rf piano pianux .objs/ tests/ *.pdf
