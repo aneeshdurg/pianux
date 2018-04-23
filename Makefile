@@ -2,7 +2,7 @@ OBJS_ALL=parser.o piano.o
 OBJS_DIR=.objs
 TEST_DIR=tests
 
-all: piano
+all: fs 
 
 all_tests: parser_test list_test
 	./tests/list_test
@@ -28,12 +28,15 @@ piano: $(OBJS_DIR)/piano.o $(OBJS_DIR)/parser.o
 list_test: $(TEST_DIR)
 	gcc list/list_test.c -g -o $(TEST_DIR)/$@
 
-fs:
+fs: piano
 	gcc -Wall pianux.c `pkg-config fuse --cflags --libs` -lpthread -o pianux
 
 
 parser_test: $(OBJS_DIR)/parser.o | $(TEST_DIR)
 	gcc $^ parser/parser_test.c -g -lao -lm -ldl -o $(TEST_DIR)/$@
+
+run:
+	./pianux mount
 
 pipe:
 	mkfifo pipe
@@ -54,5 +57,12 @@ testdoc: manual_testing.pdf
 manual_testing.pdf: manual_testing.md
 	pandoc manual_testing.md -o manual_testing.pdf
 
+pianux_docs: pianux_docs.pdf
+
+pianux_docs.pdf: README.md
+	pandoc README.md -o pianux_docs.pdf
+
+docs: pianux_docs syntaxdoc testdoc
+
 clean:
-	rm -rf piano pianux .objs/ tests/ *.pdf
+	rm -rf piano pianux pipe .objs/ tests/ *.pdf

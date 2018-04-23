@@ -56,6 +56,17 @@ void setup_sound() {
 }
 
 /**
+ * Default sound settings
+ */
+settings_t default_settings() {
+  settings_t settings;
+  settings.speed = 1;
+  settings.volume = 0;
+  settings.octave = 1.0;
+  return settings;
+}
+
+/**
  * Close and cleanup sound card
  */
 void shutdown_sound() {
@@ -64,12 +75,36 @@ void shutdown_sound() {
 }
 
 /**
+ * Perform all steps to shutdown piano
+ */
+static void shutdown_piano() {
+  shutdown_sound();
+  reset_parser();
+  LIST_DESTROY(&settings_stack);
+}
+
+/**
+ * Perform all setups to setup piano
+ */
+static void setup_piano() {
+  setup_sound();
+  reset_parser();
+  settings = default_settings();
+}
+
+/**
  * Sets the restart flag to 1
  * @param sig unused signal passed in from signal handler
  */
-void handler(int sig) {
+void reset_handler(int sig) {
   (void)sig;
   restart = 1;
+}
+
+void interrupt_handler(int sig){
+  (void)sig;
+  shutdown_piano();
+  exit(0);
 }
 
 /**
@@ -96,35 +131,6 @@ float smooth(float start, float end, int speed, int position) {
   return start + slope * position;
 }
 
-/**
- * Default sound settings
- */
-settings_t default_settings() {
-  settings_t settings;
-  settings.speed = 1;
-  settings.volume = 0;
-  settings.octave = 1.0;
-  return settings;
-}
-
-/**
- * Perform all steps to shutdown piano
- */
-static void shutdown_piano() {
-  shutdown_sound();
-  reset_parser();
-  LIST_DESTROY(&settings_stack);
-}
-
-/**
- * Perform all setups to setup piano
- */
-static void setup_piano() {
-  setup_sound();
-  reset_parser();
-  settings = default_settings();
-}
-
 int piano_proc() {
   char *buffer = NULL;
   int buf_size;
@@ -135,7 +141,7 @@ int piano_proc() {
   int i;
   settings_stack = new_list_settings_t(NULL, 0, NULL);
 
-  signal(SIGUSR1, handler);
+  signal(SIGUSR1, reset_handler);
 
   setup_piano();
   fprintf(stderr, "libao child program\n");
@@ -226,7 +232,7 @@ int piano_proc() {
     ao_play(device, buffer, buf_size);
   }
   shutdown_piano();
-  return (0);
+  return 0;
 }
 
 /**
@@ -256,8 +262,9 @@ int main(int argc, char **argv) {
   int channels = 2;
   if (argc > 1)
     channels = atoi(argv[1]);
+
   int proc_com[10][2];
-  pid_t *pids = calloc(10, sizeof(int));
+  pid_t pids[10];
   for (int i = 0; i < channels; i++) {
     pipe(proc_com[i]);
     pids[i] = setup(proc_com[i]);
@@ -281,6 +288,7 @@ int main(int argc, char **argv) {
       // Command to exit
       break;
     }
+    // TODO ~! for killing all channels
     if (c == '~') {
       // Command to create new channels or reset existing ones
       c = getc(stdin);
