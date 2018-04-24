@@ -3,8 +3,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-mkprintfn(Cmd, Note, Loop, LoopEnd, SeqSep, SeqEnd, Speed, Volume, Octave,
-          Interp, Save, Restore, End);
+mkprintfn(Cmd, 
+    Note, 
+    Loop,
+    LoopEnd,
+    SeqSep,
+    SeqEnd,
+    Speed,
+    Volume,
+    Octave,
+    Interp,
+    Save,
+    Restore,
+    End
+);
+
+#define ParseLoopBody(loop, delim)                                             \
+  loop.items = malloc(256 * sizeof(CmdT));                                     \
+  int i = 0;                                                                   \
+  while (i < 256) {                                                            \
+    CmdT next = getinput(NOLOOPS);                                             \
+    if (next.is##delim) {                                                      \
+      break;                                                                   \
+    }                                                                          \
+    loop.items[i] = next;                                                      \
+    i++;                                                                       \
+  }                                                                            \
+  loop.looplen = i + 2;                                                        \
+  loop.limit = 0;                                                              \
+  loop.seqno = 0;
 
 #define TYPE CmdT
 #define _LIST_IMPLEMENTATION
@@ -18,7 +45,8 @@ CmdT enterloop(input_flags f, CmdT ret) {
   LIST_PREPEND(&loop_stack, ret);
   return getinput(f);
 }
-CmdT getloopinput(input_flags f) {
+
+static CmdT getloopinput(input_flags f) {
   Loop *l = getLoop(&(loop_stack.head->entry));
 
   if (l->limit) {
