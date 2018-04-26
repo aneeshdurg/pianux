@@ -4,15 +4,19 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
 #define load_pianux() system("make run >/dev/null");
-#define unload_pianux() system("make unload >/dev/null");
-#define TEST(fn)                                                               \
-  load_pianux();                                                               \
+#define unload_pianux() ({ system("make unload >/dev/null"); sleep(1); })
+#define TEST_CLEAN(fn)                                                         \
   if (!fn()) {                                                                 \
     puts(#fn " passed!");                                                      \
   } else {                                                                     \
     puts(#fn " failed.");                                                      \
-  }                                                                            \
+  }
+
+#define TEST(fn)                                                               \
+  load_pianux();                                                               \
+  TEST_CLEAN(fn);                                                              \
   unload_pianux();
 
 #define pianux_path "mount/piano"
@@ -51,8 +55,31 @@ int piano_write_test(){
 }
 
 int piano_process_test(){
-  fprintf(
-  return 0;
+  int fds[2];
+  pipe(fds);
+  int orig_stdout = dup(1);
+  dup2(fds[1], 1);
+  system("ps aux | grep pia | wc -l");
+  load_pianux();
+  int fd = open(pianux_path, O_WRONLY); 
+  write(fd, "ax", 2);
+  close(fd);
+  unload_pianux();
+  system("ps aux | grep pia | wc -l");
+  dup2(orig_stdout, 1);
+  
+  FILE *output = fdopen(fds[0], "r");
+  size_t len = 0;
+  char *buffer = NULL;
+  
+  getline(&buffer, &len, output);
+  int start = atoi(buffer);
+
+  memset(buffer, 0, len);
+  getline(&buffer, &len, output);
+  int end = atoi(buffer);
+
+  return end-start;
 }
 
 int piano_logging_test(){
@@ -64,7 +91,7 @@ int main(){
   TEST(piano_size_test);
   TEST(piano_read_test);
   TEST(piano_write_test);
-  TEST(piano_process_test);
+  TEST_CLEAN(piano_process_test);
   TEST(piano_logging_test);
   
 }
