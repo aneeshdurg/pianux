@@ -28,9 +28,15 @@ piano: $(OBJS_DIR)/piano.o $(OBJS_DIR)/parser.o
 list_test: $(TEST_DIR)
 	gcc list/list_test.c -g -o $(TEST_DIR)/$@
 
-fs: piano
+fs: pianux
+
+pianux: piano
 	gcc -Wall pianux.c `pkg-config fuse --cflags --libs` -lpthread -o pianux
 
+fs_test: pianux_test
+
+pianux_test: pianux | $(TEST_DIR)
+	gcc -Wall pianux_test.c -o $(TEST_DIR)/$@
 
 parser_test: $(OBJS_DIR)/parser.o | $(TEST_DIR)
 	gcc $^ parser/parser_test.c -g -lao -lm -ldl -o $(TEST_DIR)/$@
@@ -43,6 +49,9 @@ pipe:
 
 rundebug: pipe
 	cat pipe & LOGFILE=pipe ./pianux mount
+
+example: example.c
+	gcc example.c -o example
 
 unload:
 	sudo umount mount
@@ -65,4 +74,4 @@ pianux_docs.pdf: README.md
 docs: pianux_docs syntaxdoc testdoc
 
 clean:
-	rm -rf piano pianux pipe .objs/ tests/ *.pdf
+	rm -rf piano pianux example pipe .objs/ tests/ *.pdf
