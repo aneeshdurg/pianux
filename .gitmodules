@@ -1,3 +1,6 @@
 [submodule "list"]
 	path = list
 	url = https://github.com/aneeshdurg/generic-list
+[submodule "algebraic-c"]
+	path = algebraic-c
+	url = https://github.com/aneeshdurg/algebraic-c
