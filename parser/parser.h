@@ -1,5 +1,5 @@
 #pragma once
-#include "../algebraic-c/algebraic.h"
+#include "../data_structures/algebraic-c/algebraic.h"
 #include <stdio.h>
 printableType2Header(Cmd, 
     Note, char c, 
@@ -25,7 +25,7 @@ printableType2Header(Cmd,
 
 #define TYPE CmdT
 #define _LIST_HEADER
-#include "../list/list.h"
+#include "../data_structures/list/list.h"
 #undef _LIST_HEADER
 #undef TYPE
 

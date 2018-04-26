@@ -19,7 +19,7 @@ typedef struct {
 } piano_proc;
 
 #define TYPE piano_proc 
-#include "list/list.h"
+#include "data_structures/list/list.h"
 #undef TYPE
 struct list_sentinal_piano_proc p_mapping;
 

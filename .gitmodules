@@ -1,6 +1,6 @@
 [submodule "list"]
-	path = list
+	path = data_structures/list
 	url = https://github.com/aneeshdurg/generic-list
 [submodule "algebraic-c"]
-	path = algebraic-c
+	path = data_structures/algebraic-c
 	url = https://github.com/aneeshdurg/algebraic-c

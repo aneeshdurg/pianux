@@ -1,5 +1,5 @@
 #include "parser.h"
-#include "../algebraic-c/algebraic.h"
+#include "../data_structures/algebraic-c/algebraic.h"
 #include <assert.h>
 #include <stdio.h>
 #include <unistd.h>

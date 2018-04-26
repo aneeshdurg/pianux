@@ -10,6 +10,7 @@ all_tests: parser_test list_test
 
 $(OBJS_DIR):
 	mkdir -p $(OBJS_DIR)
+
 $(TEST_DIR):
 	mkdir -p $(TEST_DIR)
 
@@ -20,13 +21,13 @@ $(OBJS_DIR)/piano.o: piano.c algebraic | $(OBJS_DIR)
 	gcc -o $@ piano.c -g -ldl -c 
 
 algebraic: 
-	cd algebraic-c/ && make algebraic.h && cd -
+	cd data_structures/algebraic-c/ && make algebraic.h && cd -
 
 piano: $(OBJS_DIR)/piano.o $(OBJS_DIR)/parser.o
 	gcc $^ -g -lao -lm -ldl -o $@ 
 
 list_test: $(TEST_DIR)
-	gcc list/list_test.c -g -o $(TEST_DIR)/$@
+	gcc data_structures/list/list_test.c -g -o $(TEST_DIR)/$@
 
 fs: pianux
 
@@ -58,13 +59,13 @@ unload:
 
 syntaxdoc: syntax.pdf
 
-syntax.pdf: syntax.md
-	pandoc syntax.md -o syntax.pdf
+syntax.pdf: docs/syntax.md
+	pandoc docs/syntax.md -o syntax.pdf
 
 testdoc: manual_testing.pdf
 
-manual_testing.pdf: manual_testing.md
-	pandoc manual_testing.md -o manual_testing.pdf
+manual_testing.pdf: docs/manual_testing.md
+	pandoc docs/manual_testing.md -o manual_testing.pdf
 
 pianux_docs: pianux_docs.pdf
 

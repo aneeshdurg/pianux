@@ -1,4 +1,4 @@
-#include "algebraic-c/algebraic.h"
+#include "data_structures/algebraic-c/algebraic.h"
 #include "parser/parser.h"
 #include <ao/ao.h>
 #include <assert.h>
@@ -24,7 +24,7 @@ typedef struct {
 
 // Implements settings_t linked list
 #define TYPE settings_t
-#include "list/list.h"
+#include "data_structures/list/list.h"
 #undef TYPE
 
 // Global vars (unique to each instance)

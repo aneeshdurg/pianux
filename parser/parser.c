@@ -1,5 +1,5 @@
 #include "parser.h"
-#include "../algebraic-c/algebraic.h"
+#include "../data_structures/algebraic-c/algebraic.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +35,7 @@ mkprintfn(Cmd,
 
 #define TYPE CmdT
 #define _LIST_IMPLEMENTATION
-#include "../list/list.h"
+#include "../data_structures/list/list.h"
 #undef _LIST_IMPLEMENTATION
 #undef TYPE
 
