@@ -51,8 +51,8 @@ pipe:
 rundebug: pipe
 	cat pipe & LOGFILE=pipe ./pianux mount
 
-example: example.c
-	gcc example.c -o example
+example: examples/example.c
+	gcc examples/example.c -o example
 
 unload:
 	sudo umount mount
