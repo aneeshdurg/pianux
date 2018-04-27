@@ -13,6 +13,12 @@ Welcome to pianux - a piano filesystem object for linux! To generate pdfs of all
 
 Pianux generates audio by launching an instance of the `piano` executable which can be generated with `make piano`. The piano can be launched independantly of pianux for testing or otherwise. The syntax bindings to use it with pianux and directly are the same. To learn the piano syntax see [syntax.md](syntax.md).
 
+## Installation
+
+To install, clone this git repo into your home directory and run `make install`. Read the onscreen instructions that follow.
+
+This will mount the filesystem and define an environment variable `PIANUX_PATH` and a function `piano` that will echo arguments to the pianux filesystem. To install to a different location, edit the contents of `.pianux_bashrc`.
+
 ## Building and running
 
 To build run `make` and then launch the program with `./pianux [mountpt]` for more information about mount points, see fuse's documentation.

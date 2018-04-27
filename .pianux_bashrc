@@ -3,3 +3,4 @@ cd ~/pianux
 [ -f mount/piano ] || make run 2>/dev/null >/dev/null
 export PIANUX_PATH=~/pianux/mount/piano
 popd >/dev/null
+piano(){ echo $@ > $PIANUX_PATH; }
