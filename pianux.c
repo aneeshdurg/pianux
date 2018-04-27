@@ -168,8 +168,16 @@ static int pianux_open(const char *path, struct fuse_file_info *fi){
       dup2(fileno(log_file), 1); 
       dup2(fileno(log_file), 2); 
     }
-    // TODO move path into env
-    execl("/home/aneesh/piano/piano", "./piano", NULL);
+
+    char *path = strdup(getenv("HOME"));
+    char *exe = "/pianux/piano";
+    path = realloc(path, strlen(path) + strlen(exe)+1);
+    path = strcat(path, exe);
+    if(!path)
+      perror("");
+    LOGGING("P: %s\n", path);
+    execlp(path, "./piano", NULL);
+    free(path);
     LOGGING("EXEC FAILED!\n");
     perror("");
     exit(1);
