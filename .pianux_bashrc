@@ -4,3 +4,4 @@ cd ~/pianux
 export PIANUX_PATH=~/pianux/mount/piano
 popd >/dev/null
 piano(){ echo $@ > $PIANUX_PATH; }
+piano_kill(){ pkill -SIGSTOP piano; }

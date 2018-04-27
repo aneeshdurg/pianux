@@ -17,7 +17,7 @@ Pianux generates audio by launching an instance of the `piano` executable which 
 
 To install, clone this git repo into your home directory and run `make install`. Read the onscreen instructions that follow.
 
-This will mount the filesystem and define an environment variable `PIANUX_PATH` and a function `piano` that will echo arguments to the pianux filesystem. To install to a different location, edit the contents of `.pianux_bashrc`.
+This will mount the filesystem and define an environment variable `PIANUX_PATH`, a function `piano` that will echo arguments to the pianux filesystem, and a function `piano_kill` to stop all active pianos. To install to a different location, edit the contents of `.pianux_bashrc`.
 
 ## Building and running
 
