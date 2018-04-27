@@ -80,4 +80,7 @@ install: all
 	echo "For the installation to take effect, open a new terminal or run source ~/.bashrc"
 
 clean:
+	cd data_structures/algebraic-c/
+	make -f data_structures/algebraic-c/Makefile clean
+	cd -
 	rm -rf piano pianux example pipe .objs/ tests/ *.pdf

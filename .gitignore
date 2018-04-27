@@ -1,0 +1,9 @@
+.objs/*
+mount/*
+tests/*
+piano
+pianux
+example
+pipe
+*.pdf
+
