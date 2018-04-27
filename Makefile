@@ -42,7 +42,9 @@ pianux_test: pianux | $(TEST_DIR)
 parser_test: $(OBJS_DIR)/parser.o | $(TEST_DIR)
 	gcc $^ parser/parser_test.c -g -lao -lm -ldl -o $(TEST_DIR)/$@
 
-run:
+mount:
+	mkdir -p mount
+run: mount
 	./pianux mount
 
 pipe:
