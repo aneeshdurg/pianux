@@ -74,5 +74,10 @@ pianux_docs.pdf: README.md
 
 docs: pianux_docs syntaxdoc testdoc
 
+install: all
+	echo "source ~/pianux/.pianux_bashrc" >> ~/.bashrc
+	echo "To uninstall remove the line 'source ~/pianux/.pianux_bashrc' from your ~/.bashrc"
+	echo "For the installation to take effect, open a new terminal or run source ~/.bashrc"
+
 clean:
 	rm -rf piano pianux example pipe .objs/ tests/ *.pdf
