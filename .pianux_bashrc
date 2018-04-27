@@ -1,6 +1,6 @@
 pushd . >/dev/null
 cd ~/pianux
-[ -f mount/piano ] || make run 2>/dev/null >/dev/null
+[ -f mount/piano ] || [ -f piano ] && make run 2>/dev/null >/dev/null
 export PIANUX_PATH=~/pianux/mount/piano
 popd >/dev/null
 piano(){ [ -f $PIANUX_PATH ] && echo $@ > $PIANUX_PATH; }
