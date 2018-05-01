@@ -1,7 +1,15 @@
+# save current directory on stack
 pushd . >/dev/null
 cd ~/pianux
+# if piano exists do nothing, else if the piano executable exists, mount pianux
 [ -f mount/piano ] || [ -f piano ] && make run 2>/dev/null >/dev/null
+
+# Set env varaible to point to pianux
 export PIANUX_PATH=~/pianux/mount/piano
+
+# restore directory
 popd >/dev/null
+
+# cli interface to piano
 piano(){ [ -f $PIANUX_PATH ] && echo $@ > $PIANUX_PATH; }
 piano_kill(){ [ -f $PIANUX_PATH ] && pkill -SIGSTOP piano; }

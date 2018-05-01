@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+// Derive print function
 mkprintfn(Cmd, 
     Note, 
     Loop,
@@ -212,7 +214,7 @@ CmdT history_pop() {
 }
 
 void init_parser() {
-  loop_stack = new_list_CmdT(NULL, 0, cmd_destroy);
+  loop_stack = new_list(CmdT, cmd_destroy);
   history.start = 0;
   history.end = 0;
 }

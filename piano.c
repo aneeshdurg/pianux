@@ -101,6 +101,10 @@ void reset_handler(int sig) {
   restart = 1;
 }
 
+/**
+ * Catch SIGINT, cleanup and exit
+ * @param sig unused signal passed in from signal handler
+ */
 void interrupt_handler(int sig){
   (void)sig;
   shutdown_piano();
@@ -124,7 +128,14 @@ static void dump_buffer(FILE *f, char delim) {
 typedef float (*interp_fn)(float, float, int, int);
 
 /**
- * Interpolator
+ * Interpolator that smoothly transitions from one frequency to another
+ *
+ * @return float current frequency
+ *
+ * @param start starting frequency
+ * @param end ending frequency
+ * @param speed current speed
+ * @param position current timestamp relative to speed
  */
 float smooth(float start, float end, int speed, int position) {
   float slope = (end - start) / (format.rate / speed);
@@ -139,7 +150,7 @@ int piano_proc() {
   float start_freq = 440.0;
   float end_freq = 440.0;
   int i;
-  settings_stack = new_list_settings_t(NULL, 0, NULL);
+  settings_stack = new_list(settings_t, NULL);
 
   signal(SIGUSR1, reset_handler);
 
@@ -255,6 +266,32 @@ pid_t setup(int proc_com[2]) {
 }
 
 /**
+ * Create a channel
+ *
+ * @return pid_t pid of created channel process
+ *
+ * @param chan channel to reset
+ */
+#define create_channel(chan) ({                                               \
+  fprintf(stderr, "Creating channel %d\n", chan);                             \
+  pipe(proc_com[chan]);                                                       \
+  pids[chan] = setup(proc_com[chan]);                                         \
+})
+/**
+ * Reset a channel
+ *
+ * @return ssize_t return 1 on success and -1 on error
+ *
+ * @param chan channel to reset
+ */
+#define reset_channel(chan) ({                                                \
+  fprintf(stderr, "Resetting channel %d\n", chan);                            \
+  kill(pids[chan], SIGUSR1);                                                  \
+  /* Write null byte to dump buffer*/                                         \
+  write(proc_com[chan][1], "\0", 1);                                          \
+})
+
+/**
  * Entry point to the piano
  */
 int main(int argc, char **argv) {
@@ -265,59 +302,61 @@ int main(int argc, char **argv) {
 
   int proc_com[10][2];
   pid_t pids[10];
-  for (int i = 0; i < channels; i++) {
-    pipe(proc_com[i]);
-    pids[i] = setup(proc_com[i]);
-  }
+  for (int i = 0; i < channels; i++)
+    create_channel(i);
 
   int channel = 0;
   while (1) {
     char c = getc(stdin);
-    if (c == '!') {
+    if (c == 'x' || c == EOF) {
+      // Command to exit
+      break;
+    } else if (c == '!') {
       // Assertions
       char *line = NULL;
       size_t n = 0;
       getline(&line, &n, stdin);
       switch (line[0]) {
-      case 'c':
-        assert(channels >= line[1] - '0');
+        case 'c':
+          assert(channels >= line[1] - '0');
       }
       continue;
-    }
-    if (c == 'x' || c == EOF) {
-      // Command to exit
-      break;
-    }
-    // TODO ~! for killing all channels
-    if (c == '~') {
+    } else if (c == '~' || c == '>') {
       // Command to create new channels or reset existing ones
-      c = getc(stdin);
-      if (c < '0' || c > '9') {
-        write(proc_com[channel][1], "~", 1);
+      char arg = getc(stdin);
+      if (arg < '0' || arg > '9') {
+        if ( c == '~' && arg == '!' ){
+          for(int i = 0; i < 10; i++){
+            if(pids[i])
+              reset_channel(i);
+          }
+        }
         write(proc_com[channel][1], &c, 1);
+        write(proc_com[channel][1], &arg, 1);
         continue;
       }
-      int chan = c - '0';
+      int chan = arg - '0';
       if (pids[chan]) {
-        fprintf(stderr, "Resetting channel %d\n", chan);
-        kill(pids[chan], SIGUSR1);
-        // Write newline to dump
-        write(proc_com[chan][1], "\0", 1);
-      } else {
-        pipe(proc_com[chan]);
-        pids[chan] = setup(proc_com[chan]);
+        switch (c) {
+          case '~': 
+            reset_channel(chan);
+            break;
+          case '>':
+            fprintf(stderr, "Switching to channel %d\n", chan);
+            channel = chan;
+            break;
+        }
+      } else{
+        switch(c) {
+          case '~': {
+            create_channel(chan);
+            break;
+          }
+          case '>': {
+            fprintf(stderr, "Can't switch to channel %d\n", chan);
+          }
+        }
       }
-    } else if (c == '>') {
-      // Command to switch channels
-      fprintf(stderr, "Got switch cmd\n");
-      c = getc(stdin);
-      if (c < '0' || c > '9') {
-        write(proc_com[channel][1], ">", 1);
-        write(proc_com[channel][1], &c, 1);
-        continue;
-      }
-      channel = c - '0';
-      fprintf(stderr, "Switching to channel %c\n", c);
     } else {
       write(proc_com[channel][1], &c, 1);
     }
@@ -328,6 +367,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < channels; i++) {
     close(proc_com[i][0]);
     write(proc_com[i][1], "x", 1);
+    close(proc_com[i][1]);
     wait(NULL);
   }
 }

@@ -55,21 +55,9 @@ Repeat commands infinitely.
 
 x and y must be notes. Plays an x smoothly transitioning to y.
 
-## "x->y
-
-x and y must be notes. Plays an x transitioning to y step-wise.
-
 ## .
 
 Repeat last command
-
-## let 'x'=command
-
-Aliases as command as a variable 'x' where x can be any string that is not already a valid command.
-
-## unset 'x'
-
-Removes alias 'x'
 
 ## Meta Input
 
@@ -77,7 +65,7 @@ Channels refer to children processes that have access to the audio card.
 
 ## ~c
 
-Reset or create channel c. If channel c is currently playing a note or is in a loop it will be stopped.
+Reset or create channel c. If channel c is currently playing a note or is in a loop it will be stopped. Alternatively, use `~!` to reset all channels.
 
 ## >c
 

@@ -234,7 +234,7 @@ void *pianux_init(struct fuse_conn_info *unused){
   pipe(janitor_pipe);
   pthread_create(&janitor_tid, NULL, janitor, NULL);
   // Set up pid mapping
-  p_mapping = new_list_piano_proc(NULL, 0, NULL);
+  p_mapping = new_list(piano_proc, NULL);
   return NULL;
 }
 
