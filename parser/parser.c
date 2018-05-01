@@ -20,6 +20,12 @@ mkprintfn(Cmd,
     End
 );
 
+/**
+ * Parse for a loop body
+ *
+ * @param loop container to store loop in
+ * @param delim delimer to stop parsing loop
+ */
 #define ParseLoopBody(loop, delim)                                             \
   loop.items = malloc(256 * sizeof(CmdT));                                     \
   int i = 0;                                                                   \
@@ -35,19 +41,40 @@ mkprintfn(Cmd,
   loop.limit = 0;                                                              \
   loop.seqno = 0;
 
+// CmdT list definition
 #define TYPE CmdT
 #define _LIST_IMPLEMENTATION
 #include "../data_structures/list/list.h"
 #undef _LIST_IMPLEMENTATION
 #undef TYPE
 
+/**
+ * Destructor for CmdT
+ *
+ * @param e element to destroy
+ */
 void cmd_destroy(CmdT e) { $(Loop, e, free(e.Loop.items)); }
 
+/**
+ * Start getting input from inside loop
+ *
+ * @return CmdT next input for piano
+ *
+ * @param f flags from getinput
+ * @param ret current loop
+ */
 CmdT enterloop(input_flags f, CmdT ret) {
   LIST_PREPEND(&loop_stack, ret);
   return getinput(f);
 }
 
+/**
+ * Get input from loop
+ *
+ * @return CmdT next input for piano
+ *
+ * @param f flags from getinput
+ */
 static CmdT getloopinput(input_flags f) {
   Loop *l = getLoop(&(loop_stack.head->entry));
 
@@ -75,6 +102,13 @@ static CmdT getloopinput(input_flags f) {
   return getinput(f);
 }
 
+/**
+ * get next input for piano
+ *
+ * @return CmdT next input for piano
+ *
+ * @param f variable used to keep track of state
+ */
 CmdT getinput(input_flags f) {
   if (loop_stack.length)
     return getloopinput(f);
@@ -175,6 +209,14 @@ CmdT getinput(input_flags f) {
   return ret;
 }
 
+/**
+ * Returns true iff the input is a type that should only be used internally
+ * for the parser
+ *
+ * @return int 1 if meta type, 0 otherwise
+ *
+ * @param item instance that should be checked
+ */
 int meta_type(CmdT item) {
   $(LoopEnd, item, return 1);
   $(SeqSep, item, return 1);
