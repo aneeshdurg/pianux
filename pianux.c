@@ -113,8 +113,7 @@ static int pianux_release( const char *path, struct fuse_file_info *fi) {
   
   LIST_FOR_EACH(&p_mapping, elem, {
       if(elem->entry.comm == fi->fh){
-  wait(NULL);
-
+        wait(NULL);
       }
   });
   return 0;  
